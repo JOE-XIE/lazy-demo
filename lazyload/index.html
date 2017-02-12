@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		body{
+			background: black;
+		}
+		.clearfix:before,.clearfix:after{
+			content:"";
+			display:table;
+		}
+		.clearfix:after{
+    		clear: both;
+		}
+		.clearfix {
+    		*zoom: 1
+		}
+		.movcon>ul{
+			width: 1320px;
+			margin: 0 auto;
+			height: 750px;
+			position: relative;
+		}
+		.movcon li{
+			list-style: none;
+			float: left;
+			border: 5px dashed #ccc;
+			margin: 10px;
+		}
+		a{
+			text-decoration: none;
+		}
+		img{
+			width:230px;
+			height: 300px;
+		}
+		.movie{
+			display: block;
+			text-align: center;
+			font-size: 50px;
+			color: white;
+		}
+		.title{
+			text-align: center;
+			width:230px;
+			font-size: 25px;
+			color: white;
+			font-weight: 900;
+    		white-space: nowrap;  
+    		overflow: hidden;  
+    		text-overflow: ellipsis; 
+		}
+		li:hover .title{
+			color: orange;
+		}
+		/* 动画css */
+		/*加载动画*/
+        .mask{
+            position: absolute;
+            top:0;
+            left:0;
+            right:0;
+            bottom:0;
+            z-index: 1000;
+            display: none;
+        }
+        .spinner {
+            margin: 100px auto;
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 10px;
+            position: absolute;
+            top:50%;
+            left:50%;
+            margin-left: -25px;
+            margin-top: -30px;
+        }
+
+        .spinner > div {
+            background-color: white;
+            height: 100%;
+            width: 6px;
+            margin: 0 1px; 
+            display: inline-block;
+            -webkit-animation: stretchdelay 1.2s infinite ease-in-out;
+            animation: stretchdelay 1.2s infinite ease-in-out;
+        }
+
+        .spinner .rect2 {
+            -webkit-animation-delay: -1.1s;
+            animation-delay: -1.1s;
+        }
+
+        .spinner .rect3 {
+            -webkit-animation-delay: -1.0s;
+            animation-delay: -1.0s;
+        }
+
+        .spinner .rect4 {
+            -webkit-animation-delay: -0.9s;
+            animation-delay: -0.9s;
+        }
+
+        .spinner .rect5 {
+            -webkit-animation-delay: -0.8s;
+            animation-delay: -0.8s;
+        }
+
+        @-webkit-keyframes stretchdelay {
+            0%, 40%, 100% { -webkit-transform: scaleY(0.4) }
+            20% { -webkit-transform: scaleY(1.0) }
+        }
+
+        @keyframes stretchdelay {
+            0%, 40%, 100% {
+                transform: scaleY(0.4);
+                -webkit-transform: scaleY(0.4);
+            }  20% {
+                   transform: scaleY(1.0);
+                   -webkit-transform: scaleY(1.0);
+               }
+        }
+	</style>
+	<link rel="stylesheet" type="text/css" href="slicepage/page.css">
+</head>
+<body>
+<h1 class="movie">电影大全</h1>
+<div class="movcon">
+	<ul class="a0 clearfix" data-start="0" data-show="false"></ul>
+	<ul class="a1 clearfix" data-start="1" data-show="false"></ul>
+	<ul class="a2 clearfix" data-start="2" data-show="false"></ul>
+	<ul class="a3 clearfix" data-start="3" data-show="false"></ul>
+	<ul class="a4 clearfix" data-start="4" data-show="false"></ul>
+</div>
+<div class="con"></div>
+</body>
+<script src="jquery-3.1.0.js"></script>
+<script src="slicepage/page.js"></script>
+<script src="template.js"></script>
+<script type="text/tem" id="tem">
+	{{each subjects as v i}}
+		<li>
+		<a href="{{v.alt}}" class="aaa">
+			<img src="{{v.images.large}}" alt="">
+			<p class="title">{{v.title}}</p>
+		</a>	
+		</li>
+	{{/each}}
+</script>
+<script>
+window.location.hash="#1";
+var p=window.location.hash.slice(1)-1;
+var section="top250";
+//检测hash变化函数
+window.onhashchange=function(){
+	$(window).scrollTop(0);
+	p=window.location.hash.slice(1)-1;
+	for (var i = 0; i < $(".movcon ul").length; i++) {
+		$(".movcon ul")[i].dataset['show']=false;
+	}
+	newpage(p);
+}
+//创建新的一屏函数
+function newpage(p){
+	var str='<div class="mask">'+
+    		'<div class="spinner">'+
+    		'<div class="rect1"></div>'+
+    		'<div class="rect2"></div>'+    
+    		'<div class="rect3"></div>'+    
+    		'<div class="rect4"></div>'+    
+    		'</div>'+    
+    	'</div>'
+	$(".movcon ul").html(str);
+	getdata(section,10,p*50,".a0");
+}
+//获取数据的函数
+function getdata(section,count,start,ul){
+		$(ul+" .mask").css("display","block");
+		$.ajax({
+			type:"get",
+			dataType:"jsonp",
+			url:"http://api.douban.com/v2/movie/"+section+"?count="+count+"&start="+start,
+			success:function(data){
+				var html=template("tem",data);
+				$(ul).append(html);
+				$(ul+" .mask").css("display","none");
+				if(ul===".a0"){
+					$(".movcon ul")[0].dataset['show']=true;
+					//分页组件的调用
+					creatPage(Math.ceil(data.total/50),2,2,p+1,".con");
+				}	
+			}
+		})
+}
+//滚动加载函数
+$(window).scroll(function(){
+		for (var i = 1; i < $(".movcon ul").length; i++) {
+			if($($(".movcon ul")[i]).offset().top-$(window).scrollTop()<200&&$(".movcon ul")[i].dataset['show']=="false"){
+				var start=$(".movcon ul")[i].dataset['start'];
+				$(".movcon ul")[i].dataset['show']="true";
+				getdata(section,10,p*50+start*10,".a"+start);
+			}
+		}
+})
+</script>
+</html>

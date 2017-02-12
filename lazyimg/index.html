@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		html,body{
+			height: 100%;
+		}
+		img{
+			display: block;
+			position: relative;
+		}
+	</style>
+</head>
+<body>
+	<img src="./img/1.jpg" data-src="img/1.jpg">
+	<img src="./img/1.jpg" data-src="img/2.jpg">
+	<img src="./img/1.jpg" data-src="img/3.jpg">
+	<img src="./img/1.jpg" data-src="img/4.jpg">
+	<img src="./img/1.jpg" data-src="img/a.jpg">
+	<img src="./img/1.jpg" data-src="img/b.jpg">
+	<img src="./img/1.jpg" data-src="img/c.jpg">
+	<img src="./img/1.jpg" data-src="img/d.jpg">
+	<img src="./img/1.jpg" data-src="img/e.jpg">
+	<img src="./img/1.jpg" data-src="img/promotion1.jpg">
+	<img src="./img/1.jpg" data-src="img/promotion2.jpg">
+	<img src="./img/1.jpg" data-src="img/promotion3.jpg">
+	<img src="./img/1.jpg" data-src="img/promotion4.jpg">
+	<img src="./img/1.jpg" id="a" data-src="img/promotion5.jpg">
+</body>
+<script src="./jquery-1.12.4.js"></script>
+<script>
+//检测屏幕滚动条高度
+function lazy(){
+for (var i = 0; i < $("img").length; i++) {
+			if($($("img")[i]).offset().top-$(window).height()<$(window).scrollTop()){
+					$("img")[i].src=$("img")[i].dataset["src"];
+			}
+		}
+}
+$(function(){
+	$("#a").one("load",function(){
+	lazy();
+	$(window).scroll(function () {
+		lazy();
+	})
+}).each(function() {
+  if(this.complete) {
+  	$(this).load()
+  };
+});
+})
+
+</script>
+</html>

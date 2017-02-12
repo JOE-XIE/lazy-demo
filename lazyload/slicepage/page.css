@@ -1,0 +1,31 @@
+.joepage_ul{
+    display: table;
+    margin: 0 auto;
+}
+.joepage_ul li{
+    list-style: none;
+    font-weight: 900;
+    float: left;
+    margin:0 10px;
+    background: white;
+}
+.joepage_ul a{
+    text-decoration: none;
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    line-height: 60px;
+    display: block;
+    color: black;
+    border: 1px solid black;
+}
+.joepage_ul .current{
+    color: red !important;
+    cursor: default;
+    border: none;
+    background: black;
+}
+.disabled{
+    color: #ccc !important;
+    cursor: default;
+}
